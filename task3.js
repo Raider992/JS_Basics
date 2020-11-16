@@ -33,7 +33,9 @@ const basket = {
     },
 
     deleteItemByName(name) {
-        return this.items = this.items.filter(el => el.name !== name);
+        return this.items.forEach((el, i) => {
+            if (el.name === name) this.items.splice(i,1);
+        });
     },
 
     clearBasket() {
@@ -53,7 +55,10 @@ basket.addItem(item3);
 
 console.log(basket.items);
 
-basket.deleteItemByName('клавиатура');
+basket.countTotalPrice();
+console.log(basket.totalPrice);
+
+basket.deleteItemByName('системный блок');
 
 console.log(basket.items);
 

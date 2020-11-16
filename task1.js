@@ -10,17 +10,6 @@
 // сообщение с помощью console.log и вернуть пустой объект.
 
 
-const getNumber = () => {
-    let n = +prompt("Введите число от 0 до 999: ");
-    try {
-        if (isNaN(n)) throw new Error('Ведённый аргумент не является числом');
-    } catch (e) {
-        throw e.message;
-    }
-    return n;
-};
-
-
 const numToObj = (num, limit = 3) => {
 
     const digits = [];
@@ -38,13 +27,7 @@ const numToObj = (num, limit = 3) => {
 
     decompose(num);
 
-    try {
-        if (digits.length > limit) throw new Error('Число превышает заданный предел')
-    }
-    catch (e) {
-        console.log(e.message);
-        return res;
-    }
+    if (digits.length > limit) return console.log('Число превышает заданный предел')
 
     for(let i = 0; i < digits.length; i++){
         res[values[i]] = digits[i];
@@ -53,5 +36,14 @@ const numToObj = (num, limit = 3) => {
     return res;
 };
 
+const runScript = () => {
+    const n = +prompt('Введите число от 0 до 999')
+    if(isNaN(n)) {
+        console.log('Введённый аргумент не является числом');
+        return runScript();
+    }
+    const res = numToObj(n);
+    return console.log(res);
+};
 
-console.log(numToObj(getNumber()));
+runScript();
