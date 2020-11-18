@@ -1,0 +1,107 @@
+.chessboard {
+    box-sizing: content-box;
+    display: flex;
+    flex-direction: column;
+    height: 50vh;
+    margin: 0 auto;
+    width: 50vw;
+    justify-content: space-between;
+}
+
+
+
+.chessboard .inner_board {
+    border: 3px solid black;
+    box-sizing: content-box;
+    display: flex;
+    flex-direction: column;
+    height: 40vh;
+    width: 40vw;
+}
+
+.chessboard .inner_board .row {
+    display: flex;
+    flex: 1;
+}
+
+
+.chessboard .box {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.light {
+    background-color: bisque;
+}
+
+.chessboard .dark {
+    background-color: chocolate;
+}
+
+.chessboard .box  img {
+    height: 4vh;
+}
+
+.chessboard .label {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chessboard .ranks-container {
+    display: flex;
+    /*border: 1px solid black;*/
+    box-sizing: content-box;
+    flex-direction: column;
+    width: 5vw;
+    height: 40vh;
+}
+
+.chessboard .files-container {
+    height: 5vh;
+    width: 40vw;
+    display: flex;
+    /*border: 1px solid black;*/
+    box-sizing: content-box;
+    flex-direction: row;
+    justify-content: center;
+    align-self: center;
+}
+
+.chessboard .horizontal-container{
+    display: flex;
+}
+
+
+/*************************************************************/
+
+.catalogue {
+    width: 100%;
+    height: 30vh;
+    background-color: lightgrey;
+    border: 1px solid black;
+    margin-top: 10vh;
+}
+
+.cart {
+    margin-top: 3vh;
+    width: 100%;
+    height: 40vh;
+    background-color: lightcyan;
+    border: 1px solid black;
+}
+
+.btn-erase {
+    height: 4vh;
+    width: 7vw;
+}
+
+.item {
+    margin: 5px;
+    border: 1px solid black;
+    background-color: rgba(255,217,0,0.15);
+}
