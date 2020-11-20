@@ -1,176 +1,164 @@
 'use strict';
 
-// 1. Создать функцию, генерирующую шахматную доску.
-// При этом можно использовать любые html-теги по своему желанию.
-// Доска должна быть разлинована соответствующим образом, т.е. чередовать
-// черные и белые ячейки. Строки должны нумероваться числами от 1 до 8,
-// столбцы – латинскими буквами A, B, C, D, E, F, G, H.
+// 1. Доработать модуль корзины.
+// a. Добавлять в объект корзины выбранные товары по клику на кнопке «Купить» без перезагрузки страницы
+// b. Привязать к событию покупки товара пересчет корзины и обновление ее внешнего вида
+// 2 *У товара может быть несколько изображений. Нужно:
+// a. Реализовать функционал показа полноразмерных картинок товара в модальном окне
+// b. Реализовать функционал перехода между картинками внутри модального окна ("листалка")
 
-// 2*. Заполнить созданную таблицу буквами, отвечающими за шахматную фигуру,
-// например К – король, Ф – ферзь и т.п.,
 
-// const workspace = document.getElementsByClassName('workspace');
+const workspace = document.querySelector('.workspace');
 
-document.querySelector('.workspace').insertAdjacentHTML('beforeend', '<div class="chessboard"></div>');
+workspace.insertAdjacentHTML('beforeend', `<div class="catalogue"></div>`)
 
-const board = document.querySelector('.chessboard');
+workspace.insertAdjacentHTML('beforeend', '<div class="cart">')
 
-const chessGame = {
-    // ranks: [8, 7, 6, 5, 4, 3, 2, 1],
-    ranks: ['VIII', 'VII', 'VI', 'V', 'IV', 'III', 'II', 'I'],
-    files: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
-    pieces: [
-        {
-            name: 'whiterook',
-            link: 'merida/wr.svg'
-        },
-        {
-            name: 'whiteknight',
-            link: 'merida/wn.svg'
-        },
-        {
-            name: 'whitebishop',
-            link: 'merida/wb.svg'
-        },
-        {
-            name: 'whiteking',
-            link: 'merida/wk.svg'
-        },
-        {
-            name: 'whitequeen',
-            link: 'merida/wq.svg'
-        },
-        {
-            name: 'whitepawn',
-            link: 'merida/wp.svg'
-        },
-        {
-            name: 'blackrook',
-            link: 'merida/br.svg'
-        },
-        {
-            name: 'blackknight',
-            link: 'merida/bn.svg'
-        },
-        {
-            name: 'blackbishop',
-            link: 'merida/bb.svg'
-        },
-        {
-            name: 'blackking',
-            link: 'merida/bk.svg'
-        },
-        {
-            name: 'blackqueen',
-            link: 'merida/bq.svg'
-        },
-        {
-            name: 'blackpawn',
-            link: 'merida/bp.svg'
+workspace.insertAdjacentHTML('beforeend', '<button class="btn-erase">Очистить корзину</button>')
+
+
+const goods = [
+
+    {
+        id: 1,
+        name: 'клавиатура',
+        price: 1500,
+    },
+    {
+        id: 2,
+        name: 'компьютерная мышь',
+        price: 1000,
+    },
+    {
+        id: 3,
+        name: 'монитор',
+        price: 5500,
+    },
+    {
+        id: 4,
+        name: 'системный блок',
+        price: 200000,
+    }
+
+];
+
+
+const catalogue = {
+    catalogueContainer: null,
+    goods: [],
+
+    renderItem(item) {
+        return `<div class="item">
+                    <div>Название: ${item.name}</div>
+                    <div>Цена: ${item.price}</div>
+                    <button class="btn-buy" id="${item.id}">Купить</button>
+                </div>`
+    },
+
+    render() {
+        this.catalogueContainer = document.querySelector('.catalogue');
+        if (this.goods.length > 0) {
+            this.goods.forEach((el) => {
+                this.catalogueContainer.insertAdjacentHTML('beforeend', this.renderItem(el));
+            });
+
+        } else {
+            this.catalogueContainer.textContent = 'Товаров нет'
         }
-    ],
-    renderMainBoard() {
-        board.insertAdjacentHTML('afterbegin', '<div class="horizontal-container"></div>');
-        const innerBoard = document.createElement('div');
-        innerBoard.classList.add('inner_board');
-        document.querySelector('.horizontal-container').insertAdjacentElement('beforeend', innerBoard);
 
-        for (let i = 0; i < 8; i++) {
-            let row = document.createElement('div');
-            let rowNumber = 8 - i;
-            row.classList.add('row');
-            row.style.flexDirection = i % 2 === 0 ? '' : 'row-reverse';
-            for (let j = 0; j < 8; j++) {
-                let square = document.createElement('DIV')
-                square.classList.add('box');
-                square.classList.add(j % 2 === 0 ? 'light' : 'dark');
-                square.dataset.row_number = rowNumber;
-                square.dataset.col_number = j + 1;
-                row.appendChild(square);
-            }
-            innerBoard.appendChild(row);
+    },
+
+    buyClickHandler(e) {
+        if (e.target.tagName === 'BUTTON') {
+            this.moveToCart(+e.target.id);
         }
     },
 
-    renderLabels() {
-        const innerBoard = document.querySelector('.inner_board');
-        const horizontalContainer = document.querySelector('.horizontal-container');
-
-        const ranksContainer = document.createElement('div');
-        ranksContainer.classList.add('ranks-container');
-        this.ranks.forEach((el) => {
-            const rank = document.createElement('div');
-            rank.classList.add('box');
-            rank.classList.add('label');
-            rank.innerText = el;
-            ranksContainer.appendChild(rank);
+    moveToCart(id) {
+        const item = this.goods.find((el) => {
+            return el.id === id;
         });
-        innerBoard.insertAdjacentElement('beforebegin', ranksContainer);
-        innerBoard.insertAdjacentElement('afterend', ranksContainer.cloneNode(true));
-
-        const filesContainer = document.createElement('div');
-        filesContainer.classList.add('files-container');
-        this.files.forEach((el) => {
-            const file = document.createElement('div');
-            file.classList.add('box');
-            file.classList.add('label');
-            file.innerText = el;
-            filesContainer.appendChild(file);
-        });
-        horizontalContainer.insertAdjacentElement('beforebegin', filesContainer);
-        horizontalContainer.insertAdjacentElement('afterend', filesContainer.cloneNode(true));
-    },
-
-    generatePiece(name) {
-
-        const piece = this.pieces.find((el) => {
-            return el.name === name;
-        });
-
-        const pieceElement = document.createElement('img');
-        pieceElement.src = piece.link;
-        pieceElement.alt = 'pic';
-
-
-        return pieceElement;
-    },
-
-
-    renderPieces() {
-        const initTemplate = [
-            ['whiterook', 'whiteknight', 'whitebishop', 'whiteking', 'whitequeen', 'whitebishop', 'whiteknight', 'whiterook'],
-            ['whitepawn', 'whitepawn', 'whitepawn', 'whitepawn', 'whitepawn', 'whitepawn', 'whitepawn', 'whitepawn'],
-            ['blackrook', 'blackknight', 'blackbishop', 'blackqueen', 'blackking', 'blackbishop', 'blackknight', 'blackrook'],
-            ['blackpawn', 'blackpawn', 'blackpawn', 'blackpawn', 'blackpawn', 'blackpawn', 'blackpawn', 'blackpawn']
-        ];
-        const innerBoard = document.querySelector('.inner_board');
-
-        const whiteRow1 = innerBoard.querySelectorAll('[data-row_number="1"]');             //белые фигуры
-        const whiteRow2 = innerBoard.querySelectorAll('[data-row_number="2"]');             //белые пешки
-        const blackRow1 = innerBoard.querySelectorAll('[data-row_number="8"]');             //чёрные фигуры
-        const blackRow2 = innerBoard.querySelectorAll('[data-row_number="7"]');             //чёрные пешки
-
-        const squareTemplate = [whiteRow1, whiteRow2, blackRow1, blackRow2];
-
-        for (let i = 0; i < 4; i++) {
-            let pieces = initTemplate[i];
-            let spots = squareTemplate[i];
-
-            for(let j = 0; j < 8; j++) {
-                let piece = this.generatePiece(pieces[j]);
-                spots[j].insertAdjacentElement('afterbegin', piece);
-            }
-        }
-
+        return cart.addItem(item);
     },
 
     init() {
-        this.renderMainBoard();
-        this.renderLabels();
-        this.renderPieces();
+        this.goods = goods;
+
+        this.render();
+        this.catalogueContainer.addEventListener('click', e => this.buyClickHandler(e));
+    }
+
+};
+
+
+const cart = {
+    goods: [],
+    totalPrice: 0,
+    itemCount: 0,
+    eraseButton: null,
+    cartContainer: null,
+
+
+    addItem(item) {
+        const itm = this.goods.find(e => e.id === item.id);
+        if (itm) {
+            itm.quantity++
+        } else {
+            item.quantity = 1;
+            this.goods.push(item);
+        }
+        this.render();
+    },
+
+
+    renderItem(item) {
+
+        return `<div class="item">
+                    <div>Название: ${item.name}</div>
+                    <div>Цена: ${item.price}</div>
+                    <div>Количество: ${item.quantity}</div>
+                    <div>Стоимость: ${item.quantity * item.price}</div>
+                </div>`
+
+    },
+
+
+    render() {
+        this.cartContainer.innerHTML = '';
+        if (this.goods.length > 0) {
+            this.goods.forEach((el) => {
+                this.cartContainer.insertAdjacentHTML('beforeend', this.renderItem(el));
+            });
+            this.totalPrice = this.getTotalPrice();
+            this.itemCount = this.getGoodsCount();
+            this.cartContainer.insertAdjacentText('beforeend', `В корзине ${this.itemCount} товаров на общую сумму: ${this.totalPrice}`);
+        } else {
+            this.cartContainer.textContent = 'Корзина пуста';
+        }
+    },
+    clear() {
+        this.goods.splice(0);
+        this.render();
+    },
+    init() {
+        this.eraseButton = document.querySelector('.btn-erase');
+        this.eraseButton.addEventListener('click', this.clear.bind(this));
+        this.cartContainer = document.querySelector('.cart');
+        this.render();
+    },
+
+    getTotalPrice() {
+        return this.goods.reduce((total, item) => {
+            return total + item.price * item.quantity;
+        }, 0);
+    },
+
+    getGoodsCount() {
+        return this.goods.reduce(function (total, item) {
+            return total + item.quantity;
+        }, 0);
     }
 };
 
-chessGame.init();
-
-
+catalogue.init();
+cart.init();
