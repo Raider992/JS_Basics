@@ -2,13 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Index</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="task1.js" defer></script>
+    <title>Змейка</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+<div id="score-wrap">
+    <p class="scoreBox">Счёт:<br><span id="currentScore" class="scoreNumber"></span></p>
+    <p class="scoreBox">Победа:<br><span id="scoreToWin" class="scoreNumber"></span></p>
+</div>
+<div id="game-wrap">
+    <table id="game"></table>
+</div>
+<div id="menu">
+    <div id="playButton" class="menuButton">Старт</div>
+    <div id="newGameButton" class="menuButton">Новая игра</div>
 
-<div class="workspace"></div>
+</div>
 
+<script src="js.js"></script>
 </body>
 </html>
