@@ -10,11 +10,82 @@
 
 const workspace = document.querySelector('.workspace');
 
-workspace.insertAdjacentHTML('beforeend', `<div class="catalogue"></div>`)
+workspace.insertAdjacentHTML('beforeend', `<div class="catalogue"></div>`);
 
-workspace.insertAdjacentHTML('beforeend', '<div class="cart">')
+workspace.insertAdjacentHTML('beforeend', '<div class="cart"></div>');
 
-workspace.insertAdjacentHTML('beforeend', '<button class="btn-erase">Очистить корзину</button>')
+
+workspace.insertAdjacentHTML('beforeend', '<button class="btn-erase">Очистить корзину</button>');
+
+
+const itemPics = [
+    ['pic/max/1/1.jpg', 'pic/max/1/2.jpg', 'pic/max/1/3.jpg', 'pic/max/1/4.jpg'],
+    ['pic/max/2/2.jpg', 'pic/max/2/3.jpg', 'pic/max/2/4.jpg', 'pic/max/2/1.jpg'],
+    ['pic/max/3/3.jpg', 'pic/max/3/4.jpg', 'pic/max/3/1.jpg', 'pic/max/3/2.jpg'],
+    ['pic/max/4/4.jpg', 'pic/max/4/1.jpg', 'pic/max/4/2.jpg', 'pic/max/4/3.jpg']
+];
+
+
+const modal = {
+    counter: 0,
+    modalPics: [],
+
+
+    getImages(id) {
+        return itemPics[id - 1];
+    },
+
+    render(itm_link) {
+        return `
+            <div class="modalWrapper">
+                <div class="modalWrapper__screen"></div>
+                <img class="modalWrapper__close" src="pic/control/close.png" alt="pic">
+                <img class="modalWrapper__right" src="pic/control/arrow_right.png" alt="pic">
+                <img class="modalWrapper__left" src="pic/control/arrow_left.png" alt="pic">  
+                <img class="modalWrapper__image" src="${itm_link}" alt="pic">              
+            </div>
+        `
+    },
+
+    arrowEventHandler(event) {
+        if (event.target.className === "modalWrapper__right") {
+            this.counter++;
+            if (this.counter > 3) this.counter = 0;
+        }
+
+        if (event.target.className === "modalWrapper__left") {
+            this.counter--;
+            if (this.counter < 0) this.counter = 3;
+        }
+
+        document.querySelector('.modalWrapper').remove();
+        workspace.insertAdjacentHTML('beforeend',(this.modalPics[this.counter]));
+        this.addEventListeners();
+    },
+
+    addEventListeners() {
+        document.querySelector('.modalWrapper__close').addEventListener('click', () => this.closeEventHandler());
+        document.querySelector('.modalWrapper__left').addEventListener('click', e => this.arrowEventHandler(e));
+        document.querySelector('.modalWrapper__right').addEventListener('click', e => this.arrowEventHandler(e));
+    },
+
+    closeEventHandler() {
+        return document.querySelector('.modalWrapper').remove();
+    },
+
+
+    init(id) {
+        this.counter = 0;
+        const images = this.getImages(id);
+
+        this.modalPics = images.map((el) => {
+            return this.render(el);
+        });
+        workspace.insertAdjacentHTML('beforeend',(this.modalPics[this.counter]));
+        this.addEventListeners();
+    }
+
+}
 
 
 const goods = [
@@ -49,6 +120,7 @@ const catalogue = {
 
     renderItem(item) {
         return `<div class="item">
+                    <div class="pic"><img src="pic/min/${item.id}.jpg" alt="pic" id="${item.id}"></div>
                     <div>Название: ${item.name}</div>
                     <div>Цена: ${item.price}</div>
                     <button class="btn-buy" id="${item.id}">Купить</button>
@@ -86,6 +158,13 @@ const catalogue = {
 
         this.render();
         this.catalogueContainer.addEventListener('click', e => this.buyClickHandler(e));
+        this.catalogueContainer.addEventListener('click', e => {
+            let id = e.target.id;
+            +id;
+            if (e.target.tagName === 'IMG') {
+                modal.init(id);
+            }
+        });
     }
 
 };
@@ -97,6 +176,7 @@ const cart = {
     itemCount: 0,
     eraseButton: null,
     cartContainer: null,
+    textContainer: null,
 
 
     addItem(item) {
@@ -114,6 +194,7 @@ const cart = {
     renderItem(item) {
 
         return `<div class="item">
+                    <div class="pic"><img src="pic/min/${item.id}.jpg" alt="pic" id="${item.id}"></div>
                     <div>Название: ${item.name}</div>
                     <div>Цена: ${item.price}</div>
                     <div>Количество: ${item.quantity}</div>
@@ -131,9 +212,9 @@ const cart = {
             });
             this.totalPrice = this.getTotalPrice();
             this.itemCount = this.getGoodsCount();
-            this.cartContainer.insertAdjacentText('beforeend', `В корзине ${this.itemCount} товаров на общую сумму: ${this.totalPrice}`);
+            this.textContainer.innerText = `В корзине ${this.itemCount} товаров на общую сумму: ${this.totalPrice}`;
         } else {
-            this.cartContainer.textContent = 'Корзина пуста';
+            this.textContainer.innerHTML = `Корзина пуста`;
         }
     },
     clear() {
@@ -141,10 +222,20 @@ const cart = {
         this.render();
     },
     init() {
+        document.querySelector(".cart").insertAdjacentHTML('beforeend', '<div class="goods_container"></div>');
+        this.cartContainer = document.querySelector('.goods_container');
+        document.querySelector(".cart").insertAdjacentHTML('beforeend', '<div class="text_container"></div>');
+        this.textContainer = document.querySelector('.text_container');
         this.eraseButton = document.querySelector('.btn-erase');
         this.eraseButton.addEventListener('click', this.clear.bind(this));
-        this.cartContainer = document.querySelector('.cart');
         this.render();
+        this.cartContainer.addEventListener('click', e => {
+            let id = e.target.id;
+            parseInt(id);
+            if (e.target.tagName === 'IMG') {
+                modal.init(id);
+            }
+        });
     },
 
     getTotalPrice() {
@@ -162,3 +253,4 @@ const cart = {
 
 catalogue.init();
 cart.init();
+
